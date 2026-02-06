@@ -42,6 +42,16 @@ npm install
 npm run dev
 ```
 
+### Docker Compose (backend + Postgres)
+```bash
+docker compose up -d db backend
+# First-time setup
+
+docker compose run --rm migrate
+
+docker compose run --rm seed
+```
+
 ### Seeded Accounts
 - Manager: `manager@example.com` / `password123`
 - Employee: `employee1@example.com` / `password123`
