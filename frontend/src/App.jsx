@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const sections = [
-  'Clients',
-  'Plans',
-  'Approvals',
-  'Work Sessions',
-  'Reports',
-  'Audit Log'
+  { label: 'Clients', roles: ['employee', 'manager'] },
+  { label: 'Plans', roles: ['employee', 'manager'] },
+  { label: 'Work Sessions', roles: ['employee', 'manager'] },
+  { label: 'Approvals', roles: ['manager'] },
+  { label: 'Reports', roles: ['manager'] },
+  { label: 'Audit Log', roles: ['manager'] }
 ];
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
@@ -21,7 +21,7 @@ const fetchJson = async (url, options = {}) => {
 };
 
 export default function App() {
-  const [active, setActive] = useState(sections[0]);
+  const [active, setActive] = useState(sections[0].label);
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [user, setUser] = useState(null);
   const [error, setError] = useState('');
@@ -68,19 +68,29 @@ export default function App() {
     localStorage.removeItem('token');
   };
 
+  const availableSections = sections.filter((section) =>
+    user ? section.roles.includes(user.role) : false
+  );
+
+  useEffect(() => {
+    if (availableSections.length && !availableSections.find((section) => section.label === active)) {
+      setActive(availableSections[0].label);
+    }
+  }, [availableSections, active]);
+
   return (
     <div className="app">
       <aside>
         <h1>Implementation Tracker</h1>
         <p className="subtitle">Single-tenant delivery operations</p>
         <nav>
-          {sections.map((section) => (
+          {availableSections.map((section) => (
             <button
-              key={section}
-              className={section === active ? 'active' : ''}
-              onClick={() => setActive(section)}
+              key={section.label}
+              className={section.label === active ? 'active' : ''}
+              onClick={() => setActive(section.label)}
             >
-              {section}
+              {section.label}
             </button>
           ))}
         </nav>
