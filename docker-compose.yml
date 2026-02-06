@@ -24,6 +24,16 @@ services:
     ports:
       - "4000:4000"
 
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:4000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
   migrate:
     image: postgres:16-alpine
     depends_on:

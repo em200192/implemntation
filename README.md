@@ -42,9 +42,9 @@ npm install
 npm run dev
 ```
 
-### Docker Compose (backend + Postgres)
+### Docker Compose (backend + frontend + Postgres)
 ```bash
-docker compose up -d db backend
+docker compose up -d db backend frontend
 # First-time setup
 
 docker compose run --rm migrate
