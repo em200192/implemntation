@@ -44,13 +44,10 @@ npm run dev
 
 ### Docker Compose (backend + frontend + Postgres)
 ```bash
-docker compose up -d db backend frontend
-# First-time setup
-
-docker compose run --rm migrate
-
-docker compose run --rm seed
+docker compose up -d
 ```
+
+The Postgres container automatically runs the schema migration and seed data on first boot via `backend/docker/init`.
 
 ### Seeded Accounts
 - Manager: `manager@example.com` / `password123`
