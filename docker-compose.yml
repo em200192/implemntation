@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: implementation
+      POSTGRES_PASSWORD: implementation
+      POSTGRES_DB: implementation_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/docker/init:/docker-entrypoint-initdb.d
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgres://implementation:implementation@db:5432/implementation_tracker
+      JWT_SECRET: change-me
+      PORT: 4000
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:4000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+  migrate:
+    image: postgres:16-alpine
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://implementation:implementation@db:5432/implementation_tracker
+    volumes:
+      - ./backend/migrations:/migrations
+    entrypoint: ["sh", "-c", "psql $DATABASE_URL -f /migrations/001_init.sql"]
+
+  seed:
+    image: postgres:16-alpine
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://implementation:implementation@db:5432/implementation_tracker
+    volumes:
+      - ./backend/seeds:/seeds
+    entrypoint: ["sh", "-c", "psql $DATABASE_URL -f /seeds/seed.sql"]
+
+volumes:
+  db_data:
